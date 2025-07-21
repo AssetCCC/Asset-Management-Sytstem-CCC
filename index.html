@@ -170,8 +170,7 @@
         #toggle-password {
             position: absolute;
             right: 0.5em;
-            top: calc(50% - 10px);
-            transform: translateY(-50%);
+            top: 10px; /* Move up by 10px from the top of the input */
             background: none;
             border: none;
             cursor: pointer;
@@ -183,6 +182,12 @@
             display: flex;
             align-items: center;
             justify-content: center;
+        }
+        .remember-me-row {
+          display: flex;
+          align-items: center;
+          gap: 0.5em;
+          margin: 0.5em 0 1em 0;
         }
     </style>
 </head>
@@ -205,9 +210,9 @@
                   <svg id="eye-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="12" rx="9" ry="5"/><circle cx="12" cy="12" r="2.5"/></svg>
                 </button>
             </div>
-            <div style="margin: 0.5em 0 1em 0; display: flex; flex-direction: row; align-items: center; gap: 0.5em;">
-                <label for="remember-me" style="margin: 0; font-weight: normal; color: black; cursor: pointer; display: flex; align-items: center;">Remember Me</label>
-                <input type="checkbox" id="remember-me" style="display: flex; align-items: center;">
+            <div class="remember-me-row">
+                <label for="remember-me">Remember Me</label>
+                <input type="checkbox" id="remember-me">
             </div>
             <button type="submit">Login</button>
             <div class="login-links">
