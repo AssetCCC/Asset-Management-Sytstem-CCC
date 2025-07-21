@@ -150,7 +150,7 @@
         .login-bg {
             position: fixed;
             top: 0; left: 0; width: 100vw; height: 100vh;
-            background: url('cork-city-hall-login.jpg') no-repeat center center fixed;
+            /* The background image will be set by JavaScript */
             background-size: cover;
             z-index: 0;
         }
@@ -217,6 +217,17 @@
       // Firestore and Auth are now available as firebase.firestore() and firebase.auth()
     </script>
     <script>
+        // Randomly select a background image for the login page
+        (function() {
+            var images = ['cork_city_hall_night.jpg', 'cork-city-hall-login.jpg'];
+            var chosen = images[Math.floor(Math.random() * images.length)];
+            var loginBg = document.getElementById('login-bg');
+            if (loginBg) {
+                loginBg.style.background = "url('" + chosen + "') no-repeat center center fixed";
+                loginBg.style.backgroundSize = 'cover';
+            }
+        })();
+
         // Remove demo user logic and in-memory assets array
 
         // Fetch assets from Firestore and display on map
