@@ -254,12 +254,12 @@
         <button class="logout-btn" onclick="logout()">Logout</button>
     </div>
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-    <!-- Firebase App (the core Firebase SDK) -->
+    <!-- Firebase scripts FIRST -->
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
-    <!-- Firebase Auth -->
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"></script>
-    <!-- Firebase Firestore -->
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"></script>
+
+    <!-- THEN your custom JS (or inline script) -->
     <script>
       // Your web app's Firebase configuration
       const firebaseConfig = {
