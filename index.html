@@ -260,6 +260,34 @@
             // Fetch and display asset markers from Firestore
             fetchAndDisplayAssets(map);
         }
+
+        document.getElementById('login-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const email = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            firebase.auth().signInWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    // Check for admin custom claim
+                    return userCredential.user.getIdTokenResult();
+                })
+                .then((idTokenResult) => {
+                    if (idTokenResult.claims.admin) {
+                        document.getElementById('login-section').style.display = 'none';
+                        document.getElementById('map-section').style.display = 'block';
+                        setTimeout(initMap, 100);
+                    } else {
+                        firebase.auth().signOut();
+                        const err = document.getElementById('login-error');
+                        err.textContent = 'Access denied: You are not an admin user.';
+                        err.style.display = 'block';
+                    }
+                })
+                .catch(error => {
+                    const err = document.getElementById('login-error');
+                    err.textContent = error.message;
+                    err.style.display = 'block';
+                });
+        });
     </script>
 </body>
 </html> 
