@@ -24,7 +24,7 @@
         .login-title {
             font-size: 1.4em;
             font-weight: 600;
-            color: red;
+            color: black;
             margin-bottom: 0.5em;
             text-align: center;
             letter-spacing: 0.5px;
@@ -160,7 +160,8 @@
             width: 100%;
         }
         .input-wrapper input[type="password"],
-        .input-wrapper input[type="text"] {
+        .input-wrapper input[type="text"],
+        .input-wrapper input[type="email"] {
             width: 100%;
             max-width: 320px;
             box-sizing: border-box;
@@ -169,7 +170,7 @@
         #toggle-password {
             position: absolute;
             right: 0.5em;
-            top: calc(50% - 10px);
+            top: calc(50% - 12px);
             transform: translateY(-50%);
             background: none;
             border: none;
@@ -204,9 +205,9 @@
                   <svg id="eye-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="12" rx="9" ry="5"/><circle cx="12" cy="12" r="2.5"/></svg>
                 </button>
             </div>
-            <div style="margin: 0.5em 0 1em 0; display: flex; align-items: center; flex-direction: row; gap: 0.5em;">
-                <label for="remember-me" style="margin: 0; font-weight: normal; color: black; vertical-align: middle; cursor: pointer;">Remember Me</label>
-                <input type="checkbox" id="remember-me" style="vertical-align: middle;">
+            <div style="margin: 0.5em 0 1em 0; display: flex; align-items: center; gap: 0.5em; flex-direction: row;">
+                <label for="remember-me" style="margin: 0; font-weight: normal; color: black; cursor: pointer;">Remember Me</label>
+                <input type="checkbox" id="remember-me">
             </div>
             <button type="submit">Login</button>
             <div class="login-links">
