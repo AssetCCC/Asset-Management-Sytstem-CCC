@@ -168,6 +168,10 @@
             <input type="email" id="username" required autocomplete="username">
             <label for="password">Password</label>
             <input type="password" id="password" required autocomplete="current-password">
+            <div style="margin: 0.5em 0 1em 0; display: flex; align-items: center;">
+                <input type="checkbox" id="remember-me" style="margin-right: 0.5em;">
+                <label for="remember-me" style="margin: 0; font-weight: normal; color: black;">Remember Me</label>
+            </div>
             <button type="submit">Login</button>
             <div class="login-links">
                 <a href="#" id="forgot-password">Forgot Password?</a>
@@ -262,33 +266,117 @@
             fetchAndDisplayAssets(map);
         }
 
-        document.getElementById('login-form').addEventListener('submit', function(e) {
+        // Register logic with Firebase Auth
+        document.getElementById('register-form').addEventListener('submit', function(e) {
             e.preventDefault();
-            const email = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-            firebase.auth().signInWithEmailAndPassword(email, password)
+            const email = document.getElementById('register-email').value;
+            const password = document.getElementById('register-password').value;
+            const password2 = document.getElementById('register-password2').value;
+            const err = document.getElementById('register-error');
+            if (password !== password2) {
+                err.textContent = "Passwords do not match.";
+                err.style.display = 'block';
+                return;
+            }
+            firebase.auth().createUserWithEmailAndPassword(email, password)
                 .then((userCredential) => {
-                    // Check for admin custom claim
-                    return userCredential.user.getIdTokenResult();
+                    // Create user doc in Firestore with firstLogin: true
+                    return firebase.firestore().collection('users').doc(userCredential.user.uid).set({
+                        email: email,
+                        firstLogin: true
+                    });
                 })
-                .then((idTokenResult) => {
-                    if (idTokenResult.claims.admin) {
-                        document.getElementById('login-section').style.display = 'none';
-                        document.getElementById('map-section').style.display = 'block';
-                        setTimeout(initMap, 100);
-                    } else {
-                        firebase.auth().signOut();
-                        const err = document.getElementById('login-error');
-                        err.textContent = 'Access denied: You are not an admin user.';
-                        err.style.display = 'block';
-                    }
+                .then(() => {
+                    registerModal.style.display = 'none';
+                    document.getElementById('register-form').reset();
+                    err.style.display = 'none';
+                    alert('Registration successful! You will be required to set a new password on first login.');
                 })
                 .catch(error => {
-                    const err = document.getElementById('login-error');
                     err.textContent = error.message;
                     err.style.display = 'block';
                 });
         });
+
+        // Helper: log login/logout events
+        function logUserEvent(email, action) {
+            firebase.firestore().collection('loginLogs').add({
+                email: email,
+                action: action,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            });
+        }
+
+        // Login logic with Firebase Auth and firstLogin check
+        document.getElementById('login-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const email = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const rememberMe = document.getElementById('remember-me').checked;
+            const persistence = rememberMe ? firebase.auth.Auth.Persistence.LOCAL : firebase.auth.Auth.Persistence.SESSION;
+            firebase.auth().setPersistence(persistence)
+                .then(() => {
+                    return firebase.auth().signInWithEmailAndPassword(email, password);
+                })
+                .then((userCredential) => {
+                    const user = userCredential.user;
+                    // Check Firestore for firstLogin
+                    return firebase.firestore().collection('users').doc(user.uid).get()
+                        .then(doc => {
+                            if (doc.exists && doc.data().firstLogin) {
+                                // First login: send password reset email, sign out, show message
+                                firebase.auth().signOut();
+                                firebase.auth().sendPasswordResetEmail(email)
+                                    .then(() => {
+                                        const err = document.getElementById('login-error');
+                                        err.textContent = 'A password reset link has been sent to your email. Please set a new password to continue.';
+                                        err.style.display = 'block';
+                                    });
+                                throw new Error('First login: password reset required.');
+                            } else {
+                                // Not first login: check admin claim
+                                return user.getIdTokenResult();
+                            }
+                        })
+                        .then((idTokenResult) => {
+                            if (idTokenResult && idTokenResult.claims && idTokenResult.claims.admin) {
+                                // Log login event
+                                logUserEvent(email, 'login');
+                                document.getElementById('login-section').style.display = 'none';
+                                document.getElementById('map-section').style.display = 'block';
+                                setTimeout(initMap, 100);
+                                // Set firstLogin to false if not already
+                                firebase.firestore().collection('users').doc(userCredential.user.uid).update({ firstLogin: false });
+                            } else if (idTokenResult) {
+                                firebase.auth().signOut();
+                                const err = document.getElementById('login-error');
+                                err.textContent = 'Access denied: You are not an admin user.';
+                                err.style.display = 'block';
+                            }
+                        });
+                })
+                .catch(error => {
+                    if (error.message !== 'First login: password reset required.') {
+                        const err = document.getElementById('login-error');
+                        err.textContent = error.message;
+                        err.style.display = 'block';
+                    }
+                });
+        });
+
+        // Logout logic with logging
+        function logout() {
+            const user = firebase.auth().currentUser;
+            if (user) {
+                logUserEvent(user.email, 'logout');
+            }
+            firebase.auth().signOut().then(() => {
+                document.getElementById('map-section').style.display = 'none';
+                document.getElementById('login-section').style.display = 'block';
+                document.getElementById('login-form').reset();
+                document.getElementById('login-error').style.display = 'none';
+            });
+        }
     </script>
 </body>
 </html> 
