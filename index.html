@@ -184,10 +184,10 @@
             justify-content: center;
         }
         .remember-me-row {
-          display: flex;
-          align-items: center;
-          gap: 0.5em;
-          margin: 0.5em 0 1em 0;
+           display: inline-flex;
+           align-items: center;
+           gap: 0.5em;
+           margin: 0.5em 0 1em 0;
         }
     </style>
 </head>
@@ -211,7 +211,7 @@
                 </button>
             </div>
             <div class="remember-me-row">
-                <label for="remember-me" style="width: 110px; display: inline-block; font-weight: normal; color: black; cursor: pointer;">Remember Me</label>
+                <label for="remember-me" style="margin-right: 0.5em; font-weight: normal; color: black; cursor: pointer;">Remember Me</label>
                 <input type="checkbox" id="remember-me">
             </div>
             <button type="submit">Login</button>
