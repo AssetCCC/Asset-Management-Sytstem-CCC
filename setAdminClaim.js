@@ -17,3 +17,8 @@ admin.auth().setCustomUserClaims(uid, { admin: true })
     console.error('Error setting admin claim:', error);
     process.exit(1);
   });
+
+document.getElementById('login-form').addEventListener('submit', function(e) {
+  e.preventDefault();
+  alert("Login button clicked");
+});
